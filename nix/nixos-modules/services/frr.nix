@@ -62,6 +62,15 @@ in
            enable
            keep-all-paths
         exit
+        router ospf6
+         redistribute connected
+         timers throttle spf 50 100 5000
+         timers lsa min-arrival 50
+         timers throttle lsa all 50 100 5000
+         fast-reroute per-prefix
+           enable
+           keep-all-paths
+        exit
       '';
     };
 
@@ -85,6 +94,7 @@ in
             map (x: ''
               interface ${x}
                 ip ospf passive
+                ipv6 ospf6 passive
               exit
             '') cfg.passive-interfaces
           );
@@ -95,6 +105,9 @@ in
                ip ospf network broadcast
                ip ospf hello-interval 1
                ip ospf dead-interval 3
+               ipv6 ospf6 network broadcast
+               ipv6 ospf6 hello-interval 1
+               ipv6 ospf6 dead-interval 3
               exit
             '') cfg.broadcast-interface
           );
